@@ -25,6 +25,7 @@ void NodoRN::InsertaRN(int num,string str)
     if(num<valor){
         if(Hizq==NULL){
             Hizq = new NodoRN(num,str);
+            Hizq->padre = this;
         }else{
             Hizq->InsertaRN(num,str);
             if(Hizq != NULL){
@@ -36,8 +37,10 @@ void NodoRN::InsertaRN(int num,string str)
     }else{
         if(Hder==NULL){
             Hder = new NodoRN(num,str);
+            Hder->padre = this;
         }else{
             Hder->InsertaRN(num,str);
+            
         }
     }
 }
@@ -46,6 +49,18 @@ void Balancear(NodoRN *raiz){
     return;
   }
   
+}
+void leyTio(NodoRN *n){
+  pNodoRN tio;
+  pNodoRN padre = n->padre;
+  if(padre != padre->padre->Hizq){
+    tio = padre->padre->Hizq;
+  }else{
+    tio = padre->padre->Hder;
+  }if(tio != NULL){
+    tio->isRed = false;
+    padre->isRed = false;
+  }
 }
 bool Comparar(NodoRN *raiz){
   bool balanceado = true;
@@ -69,6 +84,35 @@ bool Comparar(NodoRN *raiz){
   }
   return balanceado;
 }
+int NegrosRamaIzq(NodoRN *raiz, int negros){
+  if(raiz == NULL){
+    negros++;
+    return negros;
+  }if(raiz->isRed == false){
+    negros++;
+  }
+  NegrosRamaIzq(raiz->Hizq,negros);
+  return negros;
+}
+bool Comparar2(NodoRN *raiz,int negros){
+  int totales = NegrosRamaIzq(raiz,0);
+  if(raiz!=NULL){
+    if(raiz->isRed == false){
+      negros++;
+    }
+    Comparar2(raiz->Hizq,negros);
+    Comparar2(raiz->Hder,negros);
+  }else{
+    negros++;
+    if(negros == totales){
+      negros --; 
+      return true;
+    }else{
+      return false;
+    }
+  }
+}
+
 void RotacionSimpleDRN(NodoRN *n, NodoRN *n1){
   n->Hder=n1->Hizq;
   n1->Hizq=n;
@@ -149,6 +193,8 @@ int main() {
   pNodoRN raiz = new NodoRN(5,"A5");
   raiz->InsertaRN(21,"A21");
   raiz->InsertaRN(2,"A2");
+  raiz->InsertaRN(1,"A1");
+  cout<<raiz->Hizq->Hizq->padre->valor<<endl;
   PreordenR(raiz);
   bool balanceado = Comparar(raiz);
   cout<<endl<<balanceado<<endl; 
