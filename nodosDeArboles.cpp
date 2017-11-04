@@ -10,11 +10,11 @@ class NodoAA {
    int valor;
    string str;
    int nivel;
-   NodoAA *Hizq, *Hder, *anterior, *siguiente;
+   NodoAA *Hizq, *Hder, *anterior, *siguiente, *padre;
 
 
-    NodoAA(int num, string cliente, NodoAA *der = NULL, NodoAA *izq = NULL, NodoAA *sig=NULL, NodoAA *ant=NULL):
-        Hizq(izq), Hder(der), valor(num),str(cliente),anterior(ant), siguiente(sig), nivel(1) {}
+    NodoAA(int num, string cliente, NodoAA *der = NULL, NodoAA *izq = NULL, NodoAA *sig=NULL, NodoAA *ant=NULL,NodoAA *pad = NULL):
+        Hizq(izq), Hder(der), valor(num),str(cliente),anterior(ant), siguiente(sig), padre(pad),nivel(1) {}
 
     void InsertaAA(int num,string cliente); 
     void VerificarAA();
@@ -260,6 +260,8 @@ void VerificarAA(NodoAA *raiz){
   if(raiz != NULL){
     if(raiz->siguiente != NULL){
       if(raiz->siguiente->siguiente != NULL){
+        raiz->siguiente->Hder = raiz->siguiente->siguiente;
+        raiz->siguiente->Hizq = raiz;
         
       }else if(raiz->anterior != NULL){
         
