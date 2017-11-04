@@ -45,6 +45,23 @@ public:
 
 };
 
+class NodoAVL {
+   public:
+
+   int valor;
+   string str;
+   int FB;
+   NodoAVL *Hizq, *Hder, *siguiente, *anterior;
+
+
+    NodoAVL(int llave, string str, NodoAVL *der = NULL, NodoAVL *izq = NULL, NodoAVL *sig=NULL, NodoAVL *ant=NULL):
+        Hizq(izq), Hder(der), valor(llave),str(str),siguiente(sig), anterior(ant), FB(0) {}
+
+    void InsertaBinario(int num,string cliente);
+};
+
+typedef NodoAVL *pNodoAVL;
+
 void NodoBinario::InsertaBinario(int llave, string str)
 {
     if(llave<valor){
