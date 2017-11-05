@@ -4,10 +4,23 @@
 #include <sstream>
 using namespace std;
 
-class NodoRN{
-  
+
+class NodoRN {
+   public:
+
+   int valor;
+   string str;
+   bool isRed;
+   NodoRN *Hizq, *Hder, *padre, *tio;
+
+
+    NodoRN(int num, string cliente, NodoRN *der = NULL, NodoRN *izq = NULL, NodoRN *sig=NULL, NodoRN *ant=NULL):
+        Hizq(izq), Hder(der), valor(num),str(cliente),padre(padre), tio(tio), isRed(true) {}
+
+    void InsertaRN(int num,string cliente); 
 };
 
+typedef NodoRN *pNodoRN;
 class NodoAA {
   public:
 
@@ -21,7 +34,6 @@ class NodoAA {
    NodoAA(int llave, string code,string nom, NodoAA *der = NULL, NodoAA *izq = NULL, NodoAA *sig=NULL, NodoAA *ant=NULL , NodoRN *ref=NULL):
        Hizq(izq), Hder(der), valor(llave),codigo(code),nombre(nom),siguiente(sig), anterior(ant),referencia(ref), FB(0) {}
 
-  void InsertaNodo(string str);
   void InsertarAA(NodoAA *ra, bool Hh, int llave, string codigo, string nombre);
   void RotacionDobleIzquierda(NodoAA* n, NodoAA* n1);
   void RotacionDobleDerecha(NodoAA* n, NodoAA* n1);
@@ -78,15 +90,20 @@ class NodoAVL {
    public:
 
    int valor;
-   string str;
+   string codigo;
+   string nombre;
    int FB;
    NodoAVL *Hizq, *Hder, *siguiente, *anterior;
 
 
-    NodoAVL(int llave, string str, NodoAVL *der = NULL, NodoAVL *izq = NULL, NodoAVL *sig=NULL, NodoAVL *ant=NULL):
-        Hizq(izq), Hder(der), valor(llave),str(str),siguiente(sig), anterior(ant), FB(0) {}
+    NodoAVL(int llave, string code,string nom, NodoAVL *der = NULL, NodoAVL *izq = NULL, NodoAVL *sig=NULL, NodoAVL *ant=NULL):
+        Hizq(izq), Hder(der), valor(llave),codigo(code),nombre(nom),siguiente(sig), anterior(ant), FB(0) {}
 
-    void InsertaBinario(int num,string code,string name);
+    void InsertarAVL(NodoAVL *ra, bool Hh, int llave, string codigo, string nombre);
+    void RotacionDobleIzquierda(NodoAVL* n, NodoAVL* n1);
+    void RotacionDobleDerecha(NodoAVL* n, NodoAVL* n1);
+    void RotacionSimpleDerecha(NodoAVL* n, NodoAVL* n1);
+    void RotacionSimpleIzquierda(NodoAVL* n, NodoAVL* n1);
 };
 
 typedef NodoAVL *pNodoAVL;
@@ -123,6 +140,131 @@ void NodoBinario::InsertaBinario(int llave,string code, string nombre)
             Hder->InsertaBinario(llave,code,nombre);
         }
     }
+}
+
+void NodoAVL::RotacionDobleIzquierda(NodoAVL* n, NodoAVL* n1){
+    NodoAVL *n2;
+    n2=n1->Hder;
+    n->Hizq = n2->Hder;
+    n2->Hder=n;
+    n1->Hder=n2->Hizq;
+    n2->Hizq=n1;
+
+    if(n2->FB==1){
+        n1->FB=-1;
+    }else{
+        n1->FB=0;
+    }
+    if(n2->FB==-1){
+        n->FB=1;
+    }else{
+        n->FB=0;
+    }
+    n2->FB=0;
+    n=n2;
+}
+
+void NodoAVL::RotacionDobleDerecha(NodoAVL* n, NodoAVL* n1){
+    NodoAVL *n2;
+    n2=n1->Hizq;
+    n->Hder = n2->Hizq;
+    n2->Hizq=n;
+    n1->Hizq=n2->Hder;
+    n2->Hder=n1;
+
+    if(n2->FB==1){
+        n->FB=-1;
+    }else{
+        n->FB=0;
+    }
+    if(n2->FB==-1){
+        n1->FB=1;
+    }else{
+        n1->FB=0;
+    }
+    n2->FB=0;
+    n=n2;
+}
+
+void NodoAVL::RotacionSimpleDerecha(NodoAVL* n, NodoAVL* n1){
+    n->Hder=n1->Hizq;
+    n1->Hizq=n;
+
+    if(n1->FB==1){
+        n->FB=0;
+        n1->FB=0;
+    }else{
+        n->FB=1;
+        n1->FB=-1;
+    }
+    n=n1;
+}
+
+void NodoAVL::RotacionSimpleIzquierda(NodoAVL* n, NodoAVL* n1){
+    n->Hizq=n1->Hder;
+    n1->Hder=n;
+
+    if(n1->FB==-1){
+        n->FB=0;
+        n1->FB=0;
+    }else{
+        n->FB=-1;
+        n1->FB=-1;
+    }
+    n=n1;
+}
+
+void NodoAVL::InsertarAVL(NodoAVL *ra, bool Hh, int llave, string codigo, string nombre){
+  pNodoAVL n1;
+  
+  if(ra==NULL){
+      ra=new NodoAVL(llave, codigo, nombre);
+      Hh = true;
+  }else{
+      if(llave<ra->valor){
+          InsertarAVL(ra->Hizq, Hh, llave, codigo, nombre);
+
+      if(Hh){
+          switch(ra->valor){
+              case 1: ra->FB=0;
+              Hh = false;
+              break;
+              case 0: ra->FB  = -1;
+              break;
+              case -1: n1=ra->Hizq;
+              if(n1->FB == -1){
+                  RotacionSimpleIzquierda(ra, n1);
+              }else{
+                  RotacionDobleIzquierda(ra,n1);
+              }
+              Hh = false;
+              break;
+          }
+      }
+      }else{
+          if(llave>ra->valor){
+              InsertarAVL(ra->Hder, Hh, llave, codigo, nombre);
+
+              if(Hh){
+                  switch(ra->FB){
+                      case -1: ra->FB=0;
+                      Hh = false;
+                      break;
+                      case 0: ra->FB=1;
+                      break;
+                      case 1:n1=ra->Hder;
+                      if(n1->FB == 1){
+                          RotacionSimpleDerecha(ra, n1);
+                      }else{
+                          RotacionDobleDerecha(ra, n1);
+                      }
+                      Hh=false;
+                      break;
+                  }
+              }
+          }
+      }
+  }
 }
 
 void NodoAA::RotacionDobleIzquierda(NodoAA* n, NodoAA* n1){
@@ -215,7 +357,7 @@ void NodoAA::InsertarAA(NodoAA *ra, bool Hh, int llave, string codigo, string no
               case 0: ra->FB  = -1;
               break;
               case -1: n1=ra->Hizq;
-              if(n1->FB =-1){
+              if(n1->FB == -1){
                   RotacionSimpleIzquierda(ra, n1);
               }else{
                   RotacionDobleIzquierda(ra,n1);
@@ -236,7 +378,7 @@ void NodoAA::InsertarAA(NodoAA *ra, bool Hh, int llave, string codigo, string no
                       case 0: ra->FB=1;
                       break;
                       case 1:n1=ra->Hder;
-                      if(n1->FB=1){
+                      if(n1->FB == 1){
                           RotacionSimpleDerecha(ra, n1);
                       }else{
                           RotacionDobleDerecha(ra, n1);
@@ -273,6 +415,7 @@ void Binario::InsertarAerolinea(NodoBinario *raiz, string aerolinea){
           if(raiz->referencia == NULL){
             pNodoAA raizAE = new NodoAA(llaveAE, codigoAE, nombreAE);
             raiz->referencia = raizAE; 
+            cout<<raiz->codigo<<" referencia a "<<raiz->referencia->codigo<<endl; 
           }else{
             pNodoAA raizAE = raiz->referencia;
             raizAE->InsertarAA(raizAE, false, llaveAE, codigoAE, nombreAE);
@@ -286,7 +429,7 @@ void Binario::InsertarAerolinea(NodoBinario *raiz, string aerolinea){
   }else{
     return;
   }  
-}
+}  
 
 void Binario::InsertaNodo(string str)
 {
@@ -366,6 +509,166 @@ bool Binario::Buscar(NodoBinario *raiz, int llave, string str){
   }
 }
 
+void NodoRN::InsertaRN(int num,string str)
+{
+    if(num<valor){
+        if(Hizq==NULL){
+            Hizq = new NodoRN(num,str);
+            Hizq->padre = this;
+        }else{
+            Hizq->InsertaRN(num,str);
+            if(Hizq != NULL){
+              Hizq->padre = this;
+            }if(Hder != NULL){
+              Hder->padre = this;
+            }
+        }
+    }else{
+        if(Hder==NULL){
+            Hder = new NodoRN(num,str);
+            Hder->padre = this;
+        }else{
+            Hder->InsertaRN(num,str);
+            
+        }
+    }
+}
+void Balancear(NodoRN *raiz){
+  if(raiz == NULL){
+    return;
+  }
+  
+}
+void leyTio(NodoRN *n){
+  pNodoRN tio;
+  pNodoRN padre = n->padre;
+  if(padre != padre->padre->Hizq){
+    tio = padre->padre->Hizq;
+  }else{
+    tio = padre->padre->Hder;
+  }if(tio != NULL){
+    tio->isRed = false;
+    padre->isRed = false;
+  }
+}
+bool Comparar(NodoRN *raiz){
+  bool balanceado = true;
+  if(raiz  != NULL){
+    if(raiz->isRed == true){
+      if(raiz->Hizq != NULL){
+        if(raiz->Hizq->isRed == true){
+          balanceado = false;
+          return balanceado;
+        }
+      }if(raiz->Hder != NULL){
+        if(raiz->Hder->isRed == true){
+          balanceado = false;
+          return balanceado;
+        }
+      }
+    }else{
+      Comparar(raiz->Hizq);
+      Comparar(raiz->Hder);
+    }
+  }
+  return balanceado;
+}
+int NegrosRamaIzq(NodoRN *raiz, int negros){
+  if(raiz == NULL){
+    negros++;
+    return negros;
+  }if(raiz->isRed == false){
+    negros++;
+  }
+  NegrosRamaIzq(raiz->Hizq,negros);
+  return negros;
+}
+bool Comparar2(NodoRN *raiz,int negros){
+  int totales = NegrosRamaIzq(raiz,0);
+  if(raiz!=NULL){
+    if(raiz->isRed == false){
+      negros++;
+    }
+    Comparar2(raiz->Hizq,negros);
+    Comparar2(raiz->Hder,negros);
+  }else{
+    negros++;
+    if(negros == totales){
+      negros --; 
+      return true;
+    }else{
+      return false;
+    }
+  }
+}
+
+void RotacionSimpleDRN(NodoRN *n, NodoRN *n1){
+  n->Hder=n1->Hizq;
+  n1->Hizq=n;
+  n=n1;
+  if(n->isRed == true){
+    n->isRed = false;
+  }else{
+    n->isRed = true;
+  }if(n->Hizq->isRed == true){
+    n->Hizq->isRed = false;
+  }else{
+    n->Hizq->isRed = true;
+  }
+  
+}
+void RotacionSimpleIRN(NodoRN *n,NodoRN *n1){
+  n->Hizq=n1->Hder;
+  n1->Hder=n;
+  n=n1;
+  n1->isRed = true;
+  if(n->isRed == true){
+    n->isRed = false;
+  }else{
+    n->isRed = true;
+  }if(n->Hder->isRed == true){
+    n->Hder->isRed = false;
+  }else{
+    n->Hder->isRed = true;
+  }
+}
+void RotacionDobleIzquierda(NodoRN* n, NodoRN* n1){
+    NodoRN *n2;
+    n2=n1->Hder;
+    n->Hizq = n2->Hder;
+    n2->Hder=n;
+    n1->Hder=n2->Hizq;
+    n2->Hizq=n1;  
+    n=n2;
+    if(n->isRed == true){
+      n->isRed = false;
+    }else{
+      n->isRed = true;
+    }if(n->Hizq->isRed == true){
+      n->Hizq->isRed = false;
+    }else{
+      n->Hizq->isRed = true;
+    }
+}
+void RotacionDobleDerecha(NodoRN* n, NodoRN* n1){
+    NodoRN *n2;
+    n2=n1->Hizq;
+    n->Hder = n2->Hizq;
+    n2->Hizq=n;
+    n1->Hizq=n2->Hder;
+    n2->Hder=n1;
+    n=n2;
+    if(n->isRed == true){
+      n->isRed = false;
+    }else{
+      n->isRed = true;
+    }if(n->Hder->isRed == true){
+      n->Hder->isRed = false;
+    }else{
+      n->Hder->isRed = true;
+    }
+}
+
 
 
 int main(){
@@ -382,8 +685,7 @@ int main(){
   if(Arbol.Buscar(Arbol.raiz,8,"A08")){
     cout<<":P"<<endl;
   }
-  
-    
+  Arbol.InsertarAerolinea(Arbol.raiz,"A01;AE01;Aerolinea5");
   cin.get();
   return 0;
 }
