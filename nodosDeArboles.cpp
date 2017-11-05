@@ -4,26 +4,32 @@
 #include <sstream>
 using namespace std;
 
-class NodoAA {
-   public:
-
-   int valor;
-   string str;
-   int nivel;
-   NodoAA *Hizq, *Hder, *anterior, *siguiente, *padre;
-
-
-    NodoAA(int num, string cliente, NodoAA *der = NULL, NodoAA *izq = NULL, NodoAA *sig=NULL, NodoAA *ant=NULL,NodoAA *pad = NULL):
-        Hizq(izq), Hder(der), valor(num),str(cliente),anterior(ant), siguiente(sig), padre(pad),nivel(1) {}
-
-    void InsertaAA(int num,string cliente); 
-    void VerificarAA();
-
-    
-    friend class NodoBinario;
+class NodoRN{
+  
 };
 
+class NodoAA {
+  public:
+
+  int valor;
+  string codigo;
+  string nombre;
+  NodoAA *Hizq, *Hder, *siguiente, *anterior;
+  NodoRN *referencia;
+  int FB;
+
+   NodoAA(int llave, string code,string nom, NodoAA *der = NULL, NodoAA *izq = NULL, NodoAA *sig=NULL, NodoAA *ant=NULL , NodoRN *ref=NULL):
+       Hizq(izq), Hder(der), valor(llave),codigo(code),nombre(nom),siguiente(sig), anterior(ant),referencia(ref), FB(0) {}
+
+  void InsertaNodo(string str);
+  void InsertarAA(NodoAA *ra, bool Hh, int llave, string codigo, string nombre);
+  void RotacionDobleIzquierda(NodoAA* n, NodoAA* n1);
+  void RotacionDobleDerecha(NodoAA* n, NodoAA* n1);
+  void RotacionSimpleDerecha(NodoAA* n, NodoAA* n1);
+  void RotacionSimpleIzquierda(NodoAA* n, NodoAA* n1);
+};
 typedef NodoAA *pNodoAA;
+
 
 class NodoBinario {
    public:
@@ -65,6 +71,7 @@ public:
     string EliminarCliente (int cedula);
     bool Buscar(NodoBinario *raiz, int llave, string str);
     void InsertarAero(NodoBinario *raiz,string Aerolinea);
+    void InsertarAerolinea(NodoBinario *raiz, string aerolinea);
 };
 
 class NodoAVL {
@@ -116,6 +123,169 @@ void NodoBinario::InsertaBinario(int llave,string code, string nombre)
             Hder->InsertaBinario(llave,code,nombre);
         }
     }
+}
+
+void NodoAA::RotacionDobleIzquierda(NodoAA* n, NodoAA* n1){
+    NodoAA *n2;
+    n2=n1->Hder;
+    n->Hizq = n2->Hder;
+    n2->Hder=n;
+    n1->Hder=n2->Hizq;
+    n2->Hizq=n1;
+
+    if(n2->FB==1){
+        n1->FB=-1;
+    }else{
+        n1->FB=0;
+    }
+    if(n2->FB==-1){
+        n->FB=1;
+    }else{
+        n->FB=0;
+    }
+    n2->FB=0;
+    n=n2;
+}
+
+void NodoAA::RotacionDobleDerecha(NodoAA* n, NodoAA* n1){
+    NodoAA *n2;
+    n2=n1->Hizq;
+    n->Hder = n2->Hizq;
+    n2->Hizq=n;
+    n1->Hizq=n2->Hder;
+    n2->Hder=n1;
+
+    if(n2->FB==1){
+        n->FB=-1;
+    }else{
+        n->FB=0;
+    }
+    if(n2->FB==-1){
+        n1->FB=1;
+    }else{
+        n1->FB=0;
+    }
+    n2->FB=0;
+    n=n2;
+}
+
+void NodoAA::RotacionSimpleDerecha(NodoAA* n, NodoAA* n1){
+    n->Hder=n1->Hizq;
+    n1->Hizq=n;
+
+    if(n1->FB==1){
+        n->FB=0;
+        n1->FB=0;
+    }else{
+        n->FB=1;
+        n1->FB=-1;
+    }
+    n=n1;
+}
+
+void NodoAA::RotacionSimpleIzquierda(NodoAA* n, NodoAA* n1){
+    n->Hizq=n1->Hder;
+    n1->Hder=n;
+
+    if(n1->FB==-1){
+        n->FB=0;
+        n1->FB=0;
+    }else{
+        n->FB=-1;
+        n1->FB=-1;
+    }
+    n=n1;
+}
+
+void NodoAA::InsertarAA(NodoAA *ra, bool Hh, int llave, string codigo, string nombre){
+  pNodoAA n1;
+  
+  if(ra==NULL){
+      ra=new NodoAA(llave, codigo, nombre);
+      Hh = true;
+  }else{
+      if(llave<ra->valor){
+          InsertarAA(ra->Hizq, Hh, llave, codigo, nombre);
+
+      if(Hh){
+          switch(ra->valor){
+              case 1: ra->FB=0;
+              Hh = false;
+              break;
+              case 0: ra->FB  = -1;
+              break;
+              case -1: n1=ra->Hizq;
+              if(n1->FB =-1){
+                  RotacionSimpleIzquierda(ra, n1);
+              }else{
+                  RotacionDobleIzquierda(ra,n1);
+              }
+              Hh = false;
+              break;
+          }
+      }
+      }else{
+          if(llave>ra->valor){
+              InsertarAA(ra->Hder, Hh, llave, codigo, nombre);
+
+              if(Hh){
+                  switch(ra->FB){
+                      case -1: ra->FB=0;
+                      Hh = false;
+                      break;
+                      case 0: ra->FB=1;
+                      break;
+                      case 1:n1=ra->Hder;
+                      if(n1->FB=1){
+                          RotacionSimpleDerecha(ra, n1);
+                      }else{
+                          RotacionDobleDerecha(ra, n1);
+                      }
+                      Hh=false;
+                      break;
+                  }
+              }
+          }
+      }
+  }
+}
+
+void Binario::InsertarAerolinea(NodoBinario *raiz, string aerolinea){
+  string agencia = getSegmento(aerolinea, 0);
+  size_t last_index = agencia.find_last_not_of("0123456789");
+  string llaveStr = agencia.substr(last_index + 1);
+  int llave = stoi(llaveStr);
+  if(raiz!=NULL){
+    if (llave < raiz->valor){
+      InsertarAerolinea(raiz->Hizq, aerolinea);
+    }
+    else{
+      if (llave > raiz->valor){
+        InsertarAerolinea(raiz->Hder, aerolinea);
+      }
+      else{
+        if (agencia == raiz->codigo){
+          string codigoAE = getSegmento(aerolinea, 1);
+          string nombreAE = getSegmento(aerolinea, 2);
+          size_t last_indexAE = aerolinea.find_last_not_of("0123456789");
+          string llaveAEStr = aerolinea.substr(last_indexAE + 1);
+          int llaveAE = stoi(llaveAEStr);
+          if(raiz->referencia == NULL){
+            pNodoAA raizAE = new NodoAA(llaveAE, codigoAE, nombreAE);
+            raiz->referencia = raizAE; 
+          }else{
+            pNodoAA raizAE = raiz->referencia;
+            raizAE->InsertarAA(raizAE, false, llaveAE, codigoAE, nombreAE);
+          }
+        }else{
+          InsertarAerolinea(raiz->Hizq, aerolinea);
+          InsertarAerolinea(raiz->Hder, aerolinea);
+        }
+      }
+    }
+  }else{
+    return;
+  }  
 }
 
 void Binario::InsertaNodo(string str)
@@ -195,94 +365,9 @@ bool Binario::Buscar(NodoBinario *raiz, int llave, string str){
     return false;
   }
 }
-void Binario::InsertarAero(NodoBinario *raiz,string Aerolinea){
-  string agencia;
-  agencia = getSegmento(Aerolinea,0);
-  size_t last_index = agencia.find_last_not_of("0123456789");
-  string llaveStr = agencia.substr(last_index + 1);
-  int llave = stoi(llaveStr);
-  if(raiz!=NULL){
-    cout<<raiz->codigo<<endl;
-    cout<<llave<<" --- "<<raiz->valor<<endl;
-    if (llave < raiz->valor){
-      InsertarAero(raiz->Hizq,Aerolinea);
-    }
-    else{
-      if (llave > raiz->valor){
-        InsertarAero(raiz->Hder,Aerolinea);
-      }
-      else{
-        cout<<agencia<<" == "<<raiz->codigo<<endl;
-        if (agencia == raiz->codigo){
-          string CodeAero = getSegmento(Aerolinea,1);
-          size_t last_indexAero = Aerolinea.find_last_not_of("0123456789");
-          string llaveAeroStr = Aerolinea.substr(last_indexAero + 1);
-          int llaveAero = stoi(llaveAeroStr);
-          if(raiz->referencia == NULL){
-            pNodoAA raizAero = new NodoAA(llaveAero,CodeAero);
-            raiz->referencia = raizAero; 
-            cout<<raiz->codigo<<" referencia a "<<raiz->referencia->str<<endl;
-          }else{
-            pNodoAA raizAero = raiz->referencia;
-            raizAero->InsertaAA(llaveAero,CodeAero);
-            cout<<raiz->referencia->str<<" referencia a "<<raiz->referencia->anterior->str<<endl;
 
-          }
-        }else{
-          InsertarAero(raiz->Hizq,Aerolinea);
-          InsertarAero(raiz->Hder,Aerolinea);
-        }
-      }
-    }
-  }else{
-    return;
-  }
-  
-  
-}
-void NodoAA::InsertaAA(int num,string str)
-{
-    if(num<valor){
-        if(Hizq==NULL){
-            anterior = new NodoAA(num,str);
-        }else{
-            Hizq->InsertaAA(num,str);
-        }
-    }else{  
-        if(Hder==NULL){
-            siguiente = new NodoAA(num,str);
-        }else{
-            Hder->InsertaAA(num,str);
-        }
-    }
-}
-void VerificarAA(NodoAA *raiz){
-  if(raiz != NULL){
-    if(raiz->siguiente != NULL){
-      if(raiz->siguiente->siguiente != NULL){
-        raiz->siguiente->Hder = raiz->siguiente->siguiente;
-        raiz->siguiente->Hizq = raiz;
-        
-      }else if(raiz->anterior != NULL){
-        
-      }else{
-        VerificarAA(raiz->Hizq);
-        VerificarAA(raiz->Hder);
-      }
-    }else if(raiz->anterior != NULL){
-      if(raiz->anterior->anterior != NULL){
-        
-      }else if(raiz->siguiente != NULL){
-        
-      }else{
-        VerificarAA(raiz->Hizq);
-        VerificarAA(raiz->Hder);
-      }
-    }
-  }else{
-    return;
-  }
-}
+
+
 int main(){
   Binario Arbol;
   Arbol.InsertaNodo("A08;Agencia8");
@@ -297,8 +382,6 @@ int main(){
   if(Arbol.Buscar(Arbol.raiz,8,"A08")){
     cout<<":P"<<endl;
   }
-  Arbol.InsertarAero(Arbol.raiz,"A08;AE01;Aerolinea5");
-  Arbol.InsertarAero(Arbol.raiz,"A08;AE02;Aerolinea1");
   
     
   cin.get();
