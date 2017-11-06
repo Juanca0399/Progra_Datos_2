@@ -784,14 +784,14 @@ void Binario::InsertarAerolinea(NodoBinario *raiz, string aerolinea){
     }
   }
 }  
-void Binario::InsertarAvion(NodoBinario *raiz, string avion){
+void Binario::InsertarAvion(NodoBinario *raiz2, string avion){
   string agencia = getSegmento(avion, 0);
   size_t last_index = agencia.find_last_not_of("0123456789");
   string llaveStr = agencia.substr(last_index + 1);
   int llave = stoi(llaveStr);
-  if(Buscar(raiz,llave,agencia)){
+  if(Buscar(raiz2,llave,agencia)){
     cout<<"Paso Buscar ABB"<<endl;
-    pNodoBinario aux = EncontrarAgencia(raiz,agencia,llave);
+    pNodoBinario aux = EncontrarAgencia(raiz2,agencia,llave);
     string codigoAE = getSegmento(avion,1);
     size_t last_indexAE = codigoAE.find_last_not_of("0123456789");
     string llaveStrAE = codigoAE.substr(last_indexAE + 1);
@@ -890,30 +890,29 @@ void Binario::leerEInsertarABB(Binario &clientes, Binario &destinos){
 
 
 int main(){
-  Binario ArbolPrincipal, Clientes, Destinos;
+  Binario Arbol, Clientes, Destinos;
   
-  PreordenR(ArbolPrincipal.raiz);
-  PreordenR(Clientes.raiz);
-  PreordenR(Destinos.raiz);
+  //PreordenR(ArbolPrincipal.raiz);
+  //PreordenR(Clientes.raiz);
+  //PreordenR(Destinos.raiz);
   
-  /*Arbol.InsertaNodo("A08;Agencia8");
+  Arbol.InsertaNodo("A08;Agencia8");
   Arbol.InsertaNodo("A03;Agencia3");
   Arbol.InsertaNodo("A12;Agencia12");
   Arbol.InsertaNodo("A01;Agencia1");
   Arbol.InsertaNodo("A6;Agencia6");
   Arbol.InsertaNodo("A14;Agencia14");
   Arbol.InsertaNodo("A13;Agencia13");
-  /*PreordenR(Arbol.raiz);
+  PreordenR(Arbol.raiz);
   cout<<endl;
   if(Arbol.Buscar(Arbol.raiz,8,"A08")){
     cout<<":P"<<endl;
   }
-  Arbol.InsertarAerolinea(Arbol.raiz,"A01;AE01;Aerolinea5");
-  Arbol.InsertarAerolinea(Arbol.raiz,"A12;AE012;Aerolinea12");
-  Arbol.InsertarAerolinea(Arbol.raiz,"A12;AE011;Aerolinea11");
-  Arbol.InsertarAvion(Arbol.raiz,"A12;AE012;AB1;8;Aeronavegable");
-  cout<<"salio"<<endl;
+  Arbol.InsertarAerolinea(Arbol.raiz,"A03;AE012;Aerolinea12");
+  Arbol.InsertarAerolinea(Arbol.raiz,"A03;AE011;Aerolinea11");
   Arbol.InsertarAvion(Arbol.raiz,"A12;AE011;AB1;8;Aeronavegable");
+  cout<< "HOLA" << Arbol.raiz->Hizq->referencia->valor<<endl;
+  /*Arbol.InsertarAvion(Arbol.raiz,"A12;AE011;AB1;8;Aeronavegable");
   Arbol.InsertarAvion(Arbol.raiz,"A12;AE011;AC1;3;No-Aeronavegable");
   cout<<"---------------------Entro a InsertarRutas-------------------"<<endl;
   Arbol.InsertarRutas(Arbol.raiz,"A12;AE011;AC1;R02;CR;BB;10");
