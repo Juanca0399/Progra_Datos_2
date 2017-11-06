@@ -9,15 +9,16 @@ class NodoRN {
    public:
 
    int valor;
-   string str;
+   string codigo;
+   string estado;
    bool isRed;
    NodoRN *Hizq, *Hder, *padre, *tio;
 
 
-    NodoRN(int num, string cliente, NodoRN *der = NULL, NodoRN *izq = NULL, NodoRN *sig=NULL, NodoRN *ant=NULL):
-        Hizq(izq), Hder(der), valor(num),str(cliente),padre(padre), tio(tio), isRed(true) {}
+    NodoRN(int num, string code,string status, NodoRN *der = NULL, NodoRN *izq = NULL, NodoRN *sig=NULL, NodoRN *ant=NULL):
+        Hizq(izq), Hder(der), valor(num),codigo(code),estado(status),padre(padre), tio(tio), isRed(true) {}
 
-    void InsertaRN(int num,string cliente); 
+    void InsertaRN(int num,string codigo,string estado); 
 };
 
 typedef NodoRN *pNodoRN;
@@ -84,6 +85,11 @@ public:
     bool Buscar(NodoBinario *raiz, int llave, string str);
     void InsertarAero(NodoBinario *raiz,string Aerolinea);
     void InsertarAerolinea(NodoBinario *raiz, string aerolinea);
+    void InsertarAvion(NodoBinario *raiz, string avion);
+    bool BuscarAA(NodoAA *raiz, int llave, string str);
+
+
+
 };
 
 class NodoAVL {
@@ -392,44 +398,6 @@ void NodoAA::InsertarAA(NodoAA *ra, bool Hh, int llave, string codigo, string no
   }
 }
 
-void Binario::InsertarAerolinea(NodoBinario *raiz, string aerolinea){
-  string agencia = getSegmento(aerolinea, 0);
-  size_t last_index = agencia.find_last_not_of("0123456789");
-  string llaveStr = agencia.substr(last_index + 1);
-  int llave = stoi(llaveStr);
-  if(raiz!=NULL){
-    if (llave < raiz->valor){
-      InsertarAerolinea(raiz->Hizq, aerolinea);
-    }
-    else{
-      if (llave > raiz->valor){
-        InsertarAerolinea(raiz->Hder, aerolinea);
-      }
-      else{
-        if (agencia == raiz->codigo){
-          string codigoAE = getSegmento(aerolinea, 1);
-          string nombreAE = getSegmento(aerolinea, 2);
-          size_t last_indexAE = aerolinea.find_last_not_of("0123456789");
-          string llaveAEStr = aerolinea.substr(last_indexAE + 1);
-          int llaveAE = stoi(llaveAEStr);
-          if(raiz->referencia == NULL){
-            pNodoAA raizAE = new NodoAA(llaveAE, codigoAE, nombreAE);
-            raiz->referencia = raizAE; 
-            cout<<raiz->codigo<<" referencia a "<<raiz->referencia->codigo<<endl; 
-          }else{
-            pNodoAA raizAE = raiz->referencia;
-            raizAE->InsertarAA(raizAE, false, llaveAE, codigoAE, nombreAE);
-          }
-        }else{
-          InsertarAerolinea(raiz->Hizq, aerolinea);
-          InsertarAerolinea(raiz->Hder, aerolinea);
-        }
-      }
-    }
-  }else{
-    return;
-  }  
-}  
 
 void Binario::InsertaNodo(string str)
 {
@@ -478,6 +446,35 @@ void PostordenR(NodoBinario *R){
     }
 }
 
+bool Binario::BuscarAA(NodoAA *raiz, int llave, string str){
+  if (raiz != NULL){
+    if (llave < raiz->valor){
+      BuscarAA(raiz->Hizq, llave, str);
+    }
+    else{
+      if (llave > raiz->valor){
+        BuscarAA(raiz->Hder, llave, str);
+      }
+      else{
+        if (str == raiz->codigo){
+          return true;
+        }else{
+          if (BuscarAA(raiz->Hizq,llave,str)){
+            return true;  
+          }else if (BuscarAA(raiz->Hder,llave,str)){
+            return true;
+          }else{
+            return false;
+          }
+        }
+      }
+    }
+  }
+  else{
+    cout << "El nodo buscado no está en el árbol" << endl;
+    return false;
+  }
+}
 
 bool Binario::Buscar(NodoBinario *raiz, int llave, string str){
   if (raiz != NULL){
@@ -509,14 +506,14 @@ bool Binario::Buscar(NodoBinario *raiz, int llave, string str){
   }
 }
 
-void NodoRN::InsertaRN(int num,string str)
+void NodoRN::InsertaRN(int num,string codigo,string estado)
 {
     if(num<valor){
         if(Hizq==NULL){
-            Hizq = new NodoRN(num,str);
+            Hizq = new NodoRN(num,codigo,estado);
             Hizq->padre = this;
         }else{
-            Hizq->InsertaRN(num,str);
+            Hizq->InsertaRN(num,codigo,estado);
             if(Hizq != NULL){
               Hizq->padre = this;
             }if(Hder != NULL){
@@ -525,10 +522,10 @@ void NodoRN::InsertaRN(int num,string str)
         }
     }else{
         if(Hder==NULL){
-            Hder = new NodoRN(num,str);
+            Hder = new NodoRN(num,codigo,estado);
             Hder->padre = this;
         }else{
-            Hder->InsertaRN(num,str);
+            Hder->InsertaRN(num,codigo,estado);
             
         }
     }
@@ -668,6 +665,104 @@ void RotacionDobleDerecha(NodoRN* n, NodoRN* n1){
       n->Hder->isRed = true;
     }
 }
+pNodoBinario EncontrarAgencia(NodoBinario *raiz,string codigo,int llave){
+  if (llave < raiz->valor){
+    raiz = EncontrarAgencia(raiz->Hizq, codigo,llave);
+  }
+  else{
+    if (llave > raiz->valor){
+      raiz = EncontrarAgencia(raiz->Hder, codigo,llave);
+    }
+    else{
+      if (codigo == raiz->codigo){
+        return raiz;
+      }else{
+        raiz = EncontrarAgencia(raiz->Hizq, codigo,llave);
+        raiz = EncontrarAgencia(raiz->Hder, codigo,llave);
+      }
+    }
+  }
+  return raiz;
+}
+pNodoAA EncontrarAerolinea(NodoAA *raiz,string codigo,int llave){
+  if (llave < raiz->valor){
+    raiz = EncontrarAerolinea(raiz->Hizq, codigo,llave);
+  }
+  else{
+    if (llave > raiz->valor){
+      raiz = EncontrarAerolinea(raiz->Hder, codigo,llave);
+    }
+    else{
+      if (codigo == raiz->codigo){
+        return raiz;
+      }else{
+        raiz = EncontrarAerolinea(raiz->Hizq, codigo,llave);
+        raiz = EncontrarAerolinea(raiz->Hder, codigo,llave);
+      }
+    }
+  }
+  return raiz;
+}
+void Binario::InsertarAerolinea(NodoBinario *raiz, string aerolinea){
+  string agencia = getSegmento(aerolinea, 0);
+  size_t last_index = agencia.find_last_not_of("0123456789");
+  string llaveStr = agencia.substr(last_index + 1);
+  int llave = stoi(llaveStr);
+  if(Buscar(raiz,llave,agencia)){
+    pNodoBinario aux = EncontrarAgencia(raiz,agencia,llave);
+    cout<<"llego"<<endl;
+    cout<<aux->valor<<endl;
+    string codigo = getSegmento(aerolinea,1);
+    string nombre = getSegmento(aerolinea,2);
+    size_t last_indexAE = codigo.find_last_not_of("0123456789");
+    string llaveStrAE = codigo.substr(last_indexAE + 1);
+    int llaveAE = stoi(llaveStr);
+    if(aux->referencia == NULL){   
+      pNodoAA raizAE = new NodoAA(llaveAE,codigo,nombre);
+      aux->referencia = raizAE;
+      cout<<aux->codigo<<"referencia a "<<aux->referencia->codigo<<endl;
+    }else{
+      pNodoAA raizAE = aux->referencia;
+      cout<<aux->referencia->valor<<endl;
+      raizAE->InsertarAA(raizAE,false,llaveAE,codigo,nombre);
+    }
+  }
+}  
+void Binario::InsertarAvion(NodoBinario *raiz, string avion){
+  string agencia = getSegmento(avion, 0);
+  size_t last_index = agencia.find_last_not_of("0123456789");
+  string llaveStr = agencia.substr(last_index + 1);
+  int llave = stoi(llaveStr);
+  if(Buscar(raiz,llave,agencia)){
+    pNodoBinario aux = EncontrarAgencia(raiz,agencia,llave);
+    cout<<aux->valor<<endl;
+    string codigoAE = getSegmento(avion,1);
+    size_t last_indexAE = codigoAE.find_last_not_of("0123456789");
+    string llaveStrAE = codigoAE.substr(last_indexAE + 1);
+    int llaveAE = stoi(llaveStr);
+    if(BuscarAA(aux->referencia,llaveAE,codigoAE)){  
+      cout<<"llegoAv"<<endl;
+      pNodoAA aero = EncontrarAerolinea(aux->referencia,codigoAE,llaveAE);
+      cout<<"llego"<<endl;
+      cout<<aero->valor<<endl;
+      string codigoAvion = getSegmento(avion,2);
+      string estadoAvion = getSegmento(avion,4);
+      size_t last_indexAvion = codigoAvion.find_last_not_of("0123456789");
+      string llaveStrAvion = codigoAvion.substr(last_indexAvion + 1);
+      int llaveAvion = stoi(llaveStr);
+      if(aero->referencia == NULL){   
+        pNodoRN raizRN = new NodoRN(llaveAvion,codigoAvion,estadoAvion);
+        aero->referencia = raizRN;
+        cout<<aero->codigo<<"referencia a "<<aero->referencia->codigo<<endl;
+      }else{
+        pNodoRN raizRN = aero->referencia;
+        cout<<aero->referencia->valor<<endl;
+        raizRN->InsertaRN(llaveAvion,codigoAvion,estadoAvion);
+      }
+    } 
+  }
+}
+
 
 
 
@@ -686,6 +781,10 @@ int main(){
     cout<<":P"<<endl;
   }
   Arbol.InsertarAerolinea(Arbol.raiz,"A01;AE01;Aerolinea5");
+  Arbol.InsertarAerolinea(Arbol.raiz,"A12;AE012;Aerolinea12");
+  Arbol.InsertarAerolinea(Arbol.raiz,"A12;AE011;Aerolinea11");
+  Arbol.InsertarAvion(Arbol.raiz,"A12;AE012;AB1;8;Aeronavegable");
+  cout<<"salio"<<endl;
   cin.get();
   return 0;
 }
