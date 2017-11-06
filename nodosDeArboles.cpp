@@ -15,6 +15,7 @@ class NodoAVL {
 
 
     NodoAVL(int llave, string code,string nom, NodoAVL *der = NULL, NodoAVL *izq = NULL, NodoAVL *sig=NULL, NodoAVL *ant=NULL):
+        Hizq(izq), Hder(der), valor(llave),codigo(code),nombre(nom),siguiente(sig), anterior(ant), FB(0) {}
 
     void InsertarAVL(NodoAVL *ra, bool Hh, int llave, string codigo, string nombre);
     void RotacionDobleIzquierda(NodoAVL* n, NodoAVL* n1);
