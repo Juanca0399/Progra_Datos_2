@@ -87,7 +87,7 @@ public:
     void InsertarAerolinea(NodoBinario *raiz, string aerolinea);
     void InsertarAvion(NodoBinario *raiz, string avion);
     bool BuscarAA(NodoAA *raiz, int llave, string str);
-
+    void leerEInsertarABB(Binario &clientes, Binario &destinos);
 
 
 };
@@ -763,12 +763,33 @@ void Binario::InsertarAvion(NodoBinario *raiz, string avion){
   }
 }
 
-
+void Binario::leerEInsertarABB(Binario &clientes, Binario &destinos){
+  std::ifstream file1("Agencias.txt");
+	std::string str1;
+	while (std::getline(file1, str1)) {
+		InsertaNodo(str1);
+	}
+  std::ifstream file2("Clientes.txt");
+	std::string str2;
+	while (std::getline(file2, str2)) {
+		clientes.InsertaNodo(str2);
+	}
+  std::ifstream file3("Destinos.txt");
+	std::string str3;
+	while (std::getline(file3, str3)) {
+		destinos.InsertaNodo(str1);
+	}
+}
 
 
 int main(){
-  Binario Arbol;
-  Arbol.InsertaNodo("A08;Agencia8");
+  Binario ArbolPrincipal, Clientes, Destinos;
+  
+  PreordenR(ArbolPrincipal.raiz);
+  PreordenR(Clientes.raiz);
+  PreordenR(Destinos.raiz);
+  
+  /*Arbol.InsertaNodo("A08;Agencia8");
   Arbol.InsertaNodo("A03;Agencia3");
   Arbol.InsertaNodo("A12;Agencia12");
   Arbol.InsertaNodo("A01;Agencia1");
@@ -784,7 +805,7 @@ int main(){
   Arbol.InsertarAerolinea(Arbol.raiz,"A12;AE012;Aerolinea12");
   Arbol.InsertarAerolinea(Arbol.raiz,"A12;AE011;Aerolinea11");
   Arbol.InsertarAvion(Arbol.raiz,"A12;AE012;AB1;8;Aeronavegable");
-  cout<<"salio"<<endl;
+  cout<<"salio"<<endl;*/
   cin.get();
   return 0;
 }
