@@ -365,7 +365,7 @@ void NodoAA::InsertarAA(NodoAA *ra, bool Hh, int llave, string codigo, string no
           InsertarAA(ra->Hizq, Hh, llave, codigo, nombre);
 
       if(Hh){
-          switch(ra->valor){
+          switch(ra->FB){
               case 1: ra->FB=0;
               Hh = false;
               break;
@@ -432,7 +432,16 @@ void PreordenR(NodoBinario *R){
         PreordenR(R->Hder);
     }
 }
+void PreordenR(NodoAA *R){
 
+    if(R==NULL){
+        return;
+    }else{
+        cout<<R->codigo<<" - ";
+        PreordenR(R->Hizq);
+        PreordenR(R->Hder);
+    }
+}
 void InordenR(NodoBinario *R){
 
     if(R==NULL){
@@ -781,6 +790,8 @@ void Binario::InsertarAerolinea(NodoBinario *raiz, string aerolinea){
       pNodoAA raizAE = aux->referencia;
       cout<<aux->referencia->valor<<endl;
       raizAE->InsertarAA(raizAE,false,llaveAE,codigo,nombre);
+      cout<<aux->referencia->codigo<<"referencia a "<<aux->referencia->Hizq->codigo<<endl;
+
     }
   }
 }  
@@ -910,8 +921,11 @@ int main(){
   }
   Arbol.InsertarAerolinea(Arbol.raiz,"A03;AE012;Aerolinea12");
   Arbol.InsertarAerolinea(Arbol.raiz,"A03;AE011;Aerolinea11");
+  cout<<"C mamo"<<endl;
+
   Arbol.InsertarAvion(Arbol.raiz,"A12;AE011;AB1;8;Aeronavegable");
-  cout<< "HOLA" << Arbol.raiz->Hizq->referencia->valor<<endl;
+  PreordenR(Arbol.raiz->Hizq->referencia);
+  cout<< "HOLA" << Arbol.raiz->Hizq->referencia->Hizq->referencia->valor<<endl;
   /*Arbol.InsertarAvion(Arbol.raiz,"A12;AE011;AB1;8;Aeronavegable");
   Arbol.InsertarAvion(Arbol.raiz,"A12;AE011;AC1;3;No-Aeronavegable");
   cout<<"---------------------Entro a InsertarRutas-------------------"<<endl;
